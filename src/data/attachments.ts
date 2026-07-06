@@ -2,6 +2,7 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { expenseAttachments } from '@/db/schema';
 import { createClient } from '@/lib/supabase/server';
+import { getExpense } from '@/data/expenses';
 
 export interface AttachmentView {
   id: string;
@@ -34,6 +35,8 @@ export async function addAttachment(params: {
   userId: string; expenseId: string; file: File; tag: 'proof_of_payment' | 'receipt';
 }): Promise<void> {
   const { userId, expenseId, file, tag } = params;
+  const expense = await getExpense(userId, expenseId);
+  if (!expense) throw new Error('Expense not found');
   const fileType: 'image' | 'pdf' = file.type === 'application/pdf' ? 'pdf' : 'image';
   const path = `${userId}/${expenseId}/${crypto.randomUUID()}-${file.name}`;
 
