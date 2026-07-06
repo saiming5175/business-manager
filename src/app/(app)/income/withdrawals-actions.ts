@@ -7,7 +7,7 @@ import { createWithdrawal, deleteWithdrawal } from '@/data/withdrawals';
 
 export async function saveWithdrawalAction(formData: FormData) {
   const userId = await requireUserId();
-  const input = withdrawalSchema.parse({
+  const result = withdrawalSchema.safeParse({
     withdrawalDate: formData.get('withdrawalDate'),
     platform: formData.get('platform'),
     amountMyr: formData.get('amountMyr'),
@@ -15,7 +15,11 @@ export async function saveWithdrawalAction(formData: FormData) {
     orderId: formData.get('orderId') ?? '',
     note: formData.get('note') ?? '',
   });
-  await createWithdrawal(userId, input);
+  if (!result.success) {
+    const first = result.error.issues[0];
+    throw new Error(first?.message ?? 'Invalid input');
+  }
+  await createWithdrawal(userId, result.data);
   revalidatePath('/income');
 }
 

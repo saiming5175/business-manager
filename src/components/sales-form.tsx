@@ -1,4 +1,4 @@
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => new Date().toLocaleDateString('en-CA');
 
 export function SalesForm({ action }: { action: (formData: FormData) => void }) {
   return (

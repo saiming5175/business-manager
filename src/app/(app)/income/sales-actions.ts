@@ -7,13 +7,17 @@ import { upsertSales, deleteSales } from '@/data/sales';
 
 export async function saveSalesAction(formData: FormData) {
   const userId = await requireUserId();
-  const input = salesSchema.parse({
+  const result = salesSchema.safeParse({
     periodDate: formData.get('periodDate'),
     platform: formData.get('platform'),
     grossAmountMyr: formData.get('grossAmountMyr'),
     note: formData.get('note') ?? '',
   });
-  await upsertSales(userId, input);
+  if (!result.success) {
+    const first = result.error.issues[0];
+    throw new Error(first?.message ?? 'Invalid input');
+  }
+  await upsertSales(userId, result.data);
   revalidatePath('/income');
 }
 
