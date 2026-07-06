@@ -6,8 +6,11 @@ import { requireUserId } from '@/data/auth';
 import { expenseSchema } from '@/lib/validation';
 import { createExpense, updateExpense, deleteExpense } from '@/data/expenses';
 
+// Deliberate choice for a single-user tool: HTML form constraints (required /
+// type=number / min) cover normal input; this server-side validation is a
+// safety net that surfaces a readable error rather than field-level UI.
 function parse(formData: FormData) {
-  return expenseSchema.parse({
+  const result = expenseSchema.safeParse({
     orderId: formData.get('orderId'),
     orderDate: formData.get('orderDate'),
     itemName: formData.get('itemName'),
@@ -16,6 +19,11 @@ function parse(formData: FormData) {
     costRmb: formData.get('costRmb') ?? '',
     costMyr: formData.get('costMyr'),
   });
+  if (!result.success) {
+    const first = result.error.issues[0];
+    throw new Error(first?.message ?? 'Invalid expense input');
+  }
+  return result.data;
 }
 
 export async function createExpenseAction(formData: FormData) {

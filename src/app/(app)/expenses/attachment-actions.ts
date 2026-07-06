@@ -1,13 +1,14 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 import { requireUserId } from '@/data/auth';
 import { addAttachment, deleteAttachment } from '@/data/attachments';
 
 export async function uploadAttachmentAction(expenseId: string, formData: FormData) {
   const userId = await requireUserId();
   const file = formData.get('file') as File;
-  const tag = String(formData.get('tag')) as 'proof_of_payment' | 'receipt';
+  const tag = z.enum(['proof_of_payment', 'receipt']).parse(formData.get('tag'));
   if (!file || file.size === 0) return;
   await addAttachment({ userId, expenseId, file, tag });
   revalidatePath(`/expenses/${expenseId}`);

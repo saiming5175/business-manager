@@ -2,6 +2,7 @@ import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { expenses, expenseAttachments } from '@/db/schema';
 import type { ExpenseInput } from '@/lib/validation';
+import { createClient } from '@/lib/supabase/server';
 
 export interface ExpenseListItem {
   id: string;
@@ -78,5 +79,16 @@ export async function updateExpense(userId: string, id: string, input: ExpenseIn
 }
 
 export async function deleteExpense(userId: string, id: string) {
+  const atts = await db
+    .select({ filePath: expenseAttachments.filePath })
+    .from(expenseAttachments)
+    .where(and(eq(expenseAttachments.expenseId, id), eq(expenseAttachments.userId, userId)));
+
+  if (atts.length > 0) {
+    const supabase = await createClient();
+    const { error } = await supabase.storage.from('receipts').remove(atts.map((a) => a.filePath));
+    if (error) console.error('Failed to remove attachment files from storage:', error);
+  }
+
   await db.delete(expenses).where(and(eq(expenses.id, id), eq(expenses.userId, userId)));
 }
