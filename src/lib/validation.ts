@@ -21,7 +21,10 @@ export type ExpenseInput = z.infer<typeof expenseSchema>;
 export const salesSchema = z.object({
   periodDate: isoDate,
   platform: z.enum(['shopee', 'lazada', 'others']),
-  grossAmountMyr: z.coerce.number().nonnegative(),
+  grossAmountMyr: z.preprocess(
+    (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
+    z.coerce.number({ error: 'Gross sales amount is required' }).nonnegative(),
+  ),
   note: z.string().trim().optional().nullable(),
 });
 export type SalesInput = z.infer<typeof salesSchema>;

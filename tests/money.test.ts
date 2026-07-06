@@ -9,6 +9,10 @@ describe('sumMoney', () => {
   it('returns 0 for empty input', () => {
     expect(sumMoney([])).toBe(0);
   });
+  it('handles negative amounts without drift', () => {
+    expect(sumMoney([-5.5])).toBe(-5.5);
+    expect(sumMoney([100, -30.25, -0.75])).toBe(69);
+  });
 });
 
 describe('formatMYR', () => {

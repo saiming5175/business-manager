@@ -41,4 +41,23 @@ describe('salesSchema', () => {
     });
     expect(p.grossAmountMyr).toBe(400);
   });
+
+  it('accepts an explicit zero gross amount', () => {
+    const p = salesSchema.parse({
+      periodDate: '2026-07-01', platform: 'lazada', grossAmountMyr: '0', note: '',
+    });
+    expect(p.grossAmountMyr).toBe(0);
+  });
+
+  it('rejects an empty gross amount', () => {
+    expect(() => salesSchema.parse({
+      periodDate: '2026-07-01', platform: 'lazada', grossAmountMyr: '', note: '',
+    })).toThrow();
+  });
+
+  it('rejects a whitespace-only gross amount', () => {
+    expect(() => salesSchema.parse({
+      periodDate: '2026-07-01', platform: 'lazada', grossAmountMyr: '   ', note: '',
+    })).toThrow();
+  });
 });
