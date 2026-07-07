@@ -81,6 +81,13 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  input,
+  select,
+  textarea {
+    @apply bg-secondary border border-border text-foreground rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-muted-foreground;
+    min-height: 40px;
+  }
 }
 
 @layer components {
