@@ -16,11 +16,29 @@ export default async function IncomePage({ searchParams }: { searchParams: Promi
   const userId = await requireUserId();
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Income</h1>
-      <div className="flex gap-2 border-b">
-        <Link href="/income?tab=sales" className={active === 'sales' ? 'border-b-2 border-black py-2 font-medium' : 'py-2 text-gray-500'}>Sales</Link>
-        <Link href="/income?tab=withdrawals" className={active === 'withdrawals' ? 'border-b-2 border-black py-2 font-medium' : 'py-2 text-gray-500'}>Withdrawals</Link>
+    <div className="flex flex-col gap-5">
+      <h1 className="text-2xl font-semibold tracking-[-0.025em]">Income</h1>
+      <div className="flex gap-1 border-b border-hair">
+        <Link
+          href="/income?tab=sales"
+          className={
+            active === 'sales'
+              ? 'border-b-2 border-ink px-1 py-2.5 text-sm font-semibold text-ink'
+              : 'border-b-2 border-transparent px-1 py-2.5 text-sm font-medium text-muted'
+          }
+        >
+          Sales
+        </Link>
+        <Link
+          href="/income?tab=withdrawals"
+          className={
+            active === 'withdrawals'
+              ? 'ml-4 border-b-2 border-ink px-1 py-2.5 text-sm font-semibold text-ink'
+              : 'ml-4 border-b-2 border-transparent px-1 py-2.5 text-sm font-medium text-muted'
+          }
+        >
+          Withdrawals
+        </Link>
       </div>
       {active === 'sales' ? <SalesTab userId={userId} /> : <WithdrawalsTab userId={userId} />}
     </div>
@@ -30,22 +48,26 @@ export default async function IncomePage({ searchParams }: { searchParams: Promi
 async function SalesTab({ userId }: { userId: string }) {
   const items = await listSales(userId);
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <SalesForm action={saveSalesAction} />
-      <ul className="flex flex-col gap-2">
+      <ul className="card flex flex-col divide-y divide-hair p-0">
         {items.map((s) => {
           const remove = delSales.bind(null, s.id);
           return (
-            <li key={s.id} className="flex items-center justify-between rounded border p-3">
-              <span>{s.year}-{String(s.month).padStart(2, '0')} · {platformLabel[s.platform]}</span>
-              <span className="flex items-center gap-3">
-                {formatMYR(s.grossAmountMyr)}
-                <form action={remove}><button className="text-xs text-red-600">Delete</button></form>
+            <li key={s.id} className="flex items-center justify-between gap-3 px-5 py-3.5">
+              <span className="text-sm font-medium">
+                {s.year}-{String(s.month).padStart(2, '0')} · {platformLabel[s.platform]}
+              </span>
+              <span className="flex items-center gap-4">
+                <span className="tnum text-sm font-semibold">{formatMYR(s.grossAmountMyr)}</span>
+                <form action={remove}>
+                  <button className="text-xs font-medium text-down hover:underline">Delete</button>
+                </form>
               </span>
             </li>
           );
         })}
-        {items.length === 0 && <li className="text-sm text-gray-500">No sales recorded.</li>}
+        {items.length === 0 && <li className="px-5 py-6 text-sm text-muted">No sales recorded.</li>}
       </ul>
     </div>
   );
@@ -54,22 +76,26 @@ async function SalesTab({ userId }: { userId: string }) {
 async function WithdrawalsTab({ userId }: { userId: string }) {
   const items = await listWithdrawals(userId);
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <WithdrawalForm action={saveWithdrawalAction} />
-      <ul className="flex flex-col gap-2">
+      <ul className="card flex flex-col divide-y divide-hair p-0">
         {items.map((w) => {
           const remove = delWithdrawal.bind(null, w.id);
           return (
-            <li key={w.id} className="flex items-center justify-between rounded border p-3">
-              <span>{w.withdrawalDate} · {platformLabel[w.platform]} · {w.type}{w.orderId ? ` · ${w.orderId}` : ''}</span>
-              <span className="flex items-center gap-3">
-                {formatMYR(w.amountMyr)}
-                <form action={remove}><button className="text-xs text-red-600">Delete</button></form>
+            <li key={w.id} className="flex items-center justify-between gap-3 px-5 py-3.5">
+              <span className="text-sm font-medium">
+                {w.withdrawalDate} · {platformLabel[w.platform]} · {w.type}{w.orderId ? ` · ${w.orderId}` : ''}
+              </span>
+              <span className="flex items-center gap-4">
+                <span className="tnum text-sm font-semibold">{formatMYR(w.amountMyr)}</span>
+                <form action={remove}>
+                  <button className="text-xs font-medium text-down hover:underline">Delete</button>
+                </form>
               </span>
             </li>
           );
         })}
-        {items.length === 0 && <li className="text-sm text-gray-500">No withdrawals recorded.</li>}
+        {items.length === 0 && <li className="px-5 py-6 text-sm text-muted">No withdrawals recorded.</li>}
       </ul>
     </div>
   );
