@@ -51,7 +51,7 @@ export default async function ExpensesPage({
                   ))}
                 </div>
                 <div className="mt-0.5 text-xs text-muted">
-                  {e.orderDate} · #{e.orderId} · {e.paymentAccount}
+                  {e.orderDate} · #{e.orderId} · ×{e.quantity} · {e.paymentAccount}
                 </div>
               </div>
               <span className="tnum shrink-0 text-[14.5px] font-semibold">{formatMYR(e.costMyr)}</span>
