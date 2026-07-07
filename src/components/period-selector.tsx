@@ -16,21 +16,40 @@ export function PeriodSelector() {
     router.push(`?${sp.toString()}`);
   }
 
+  const kinds = [
+    { value: 'month', label: 'Month' },
+    { value: 'year', label: 'Year' },
+    { value: 'all', label: 'All time' },
+  ];
+
   return (
-    <div className="flex flex-wrap gap-2">
-      <select value={kind} onChange={(e) => update({ kind: e.target.value })}
-        className="rounded border p-2">
-        <option value="month">Month</option>
-        <option value="year">Year</option>
-        <option value="all">All time</option>
-      </select>
+    <div className="flex flex-wrap items-center gap-2">
+      <div className="seg">
+        {kinds.map((k) => (
+          <button
+            key={k.value}
+            type="button"
+            className={kind === k.value ? 'on' : ''}
+            onClick={() => update({ kind: k.value })}
+          >
+            {k.label}
+          </button>
+        ))}
+      </div>
       {kind !== 'all' && (
-        <input type="number" value={year} onChange={(e) => update({ year: e.target.value })}
-          className="w-24 rounded border p-2" />
+        <input
+          type="number"
+          value={year}
+          onChange={(e) => update({ year: e.target.value })}
+          className="w-24 !min-h-0 rounded-[9px] border border-hair-2 bg-paper px-3 py-2 text-[13px] font-medium"
+        />
       )}
       {kind === 'month' && (
-        <select value={month} onChange={(e) => update({ month: e.target.value })}
-          className="rounded border p-2">
+        <select
+          value={month}
+          onChange={(e) => update({ month: e.target.value })}
+          className="!min-h-0 rounded-[9px] border border-hair-2 bg-paper px-3 py-2 text-[13px] font-medium"
+        >
           {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
             <option key={m} value={m}>{m}</option>
           ))}

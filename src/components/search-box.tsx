@@ -23,7 +23,7 @@ export function SearchBox() {
       defaultValue={q}
       onChange={(e) => update(e.target.value)}
       placeholder="Search item or order ID"
-      className="rounded border p-2"
+      className="w-full max-w-xs"
     />
   );
 }

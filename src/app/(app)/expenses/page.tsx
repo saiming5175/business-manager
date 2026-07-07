@@ -7,6 +7,7 @@ import { PeriodSelector } from '@/components/period-selector';
 import { SearchBox } from '@/components/search-box';
 
 const tagLabel = { proof_of_payment: 'Proof', receipt: 'Receipt' } as const;
+const tagBadgeClass = { proof_of_payment: 'badge-proof', receipt: 'badge-receipt' } as const;
 
 export default async function ExpensesPage({
   searchParams,
@@ -23,34 +24,43 @@ export default async function ExpensesPage({
     return e.itemName.toLowerCase().includes(q) || e.orderId.toLowerCase().includes(q);
   });
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Expenses</h1>
-        <Link href="/expenses/new" className="rounded bg-black px-3 py-2 text-sm text-white">+ Add</Link>
+    <div className="flex flex-col gap-5">
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold tracking-[-0.025em]">Expenses</h1>
+        <Link href="/expenses/new" className="btn-primary">
+          <svg viewBox="0 0 24 24" className="h-[15px] w-[15px]" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Add expense
+        </Link>
       </div>
       <div className="flex flex-wrap gap-2">
         <PeriodSelector />
         <SearchBox />
       </div>
-      <ul className="flex flex-col gap-2">
+      <ul className="card flex flex-col divide-y divide-hair p-0">
         {items.map((e) => (
           <li key={e.id}>
-            <Link href={`/expenses/${e.id}`} className="block rounded border p-3">
-              <div className="flex justify-between">
-                <span className="font-medium">{e.itemName}</span>
-                <span>{formatMYR(e.costMyr)}</span>
+            <Link href={`/expenses/${e.id}`} className="flex items-center justify-between gap-3 px-5 py-3.5 hover:bg-canvas">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-1.5 text-sm font-semibold">
+                  <span className="truncate">{e.itemName}</span>
+                  {e.tags.length === 0 && <span className="badge badge-none">No files</span>}
+                  {e.tags.map((t) => (
+                    <span key={t} className={`badge ${tagBadgeClass[t]}`}>{tagLabel[t]}</span>
+                  ))}
+                </div>
+                <div className="mt-0.5 text-xs text-muted">
+                  {e.orderDate} · #{e.orderId} · {e.paymentAccount}
+                </div>
               </div>
-              <div className="text-sm text-gray-500">{e.orderDate} · {e.orderId} · x{e.quantity} · {e.paymentAccount}</div>
-              <div className="mt-1 flex gap-1">
-                {e.tags.length === 0 && <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">No files</span>}
-                {e.tags.map((t) => (
-                  <span key={t} className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-700">{tagLabel[t]}</span>
-                ))}
-              </div>
+              <span className="tnum shrink-0 text-[14.5px] font-semibold">{formatMYR(e.costMyr)}</span>
             </Link>
           </li>
         ))}
-        {items.length === 0 && <li className="text-sm text-gray-500">No matching expenses.</li>}
+        {items.length === 0 && (
+          <li className="px-5 py-6 text-sm text-muted">No matching expenses.</li>
+        )}
       </ul>
     </div>
   );

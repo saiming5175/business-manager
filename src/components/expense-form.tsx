@@ -10,32 +10,49 @@ export function ExpenseForm({
   submitLabel: string;
 }) {
   return (
-    <form action={action} className="flex flex-col gap-3">
-      <label className="flex flex-col gap-1 text-sm">Order ID *
-        <input name="orderId" required defaultValue={defaults?.orderId ?? ''} className="rounded border p-2" />
+    <form action={action} className="card flex flex-col gap-4">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="flex flex-col">
+          <span className="field-label">Order ID *</span>
+          <input name="orderId" required defaultValue={defaults?.orderId ?? ''} />
+        </label>
+        <label className="flex flex-col">
+          <span className="field-label">Order date *</span>
+          <input name="orderDate" type="date" required defaultValue={defaults?.orderDate ?? today()} />
+        </label>
+      </div>
+
+      <label className="flex flex-col">
+        <span className="field-label">Item name *</span>
+        <input name="itemName" required defaultValue={defaults?.itemName ?? ''} />
       </label>
-      <label className="flex flex-col gap-1 text-sm">Order Date *
-        <input name="orderDate" type="date" required defaultValue={defaults?.orderDate ?? today()} className="rounded border p-2" />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">Item Name *
-        <input name="itemName" required defaultValue={defaults?.itemName ?? ''} className="rounded border p-2" />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">Quantity *
-        <input name="quantity" type="number" min="1" required defaultValue={defaults?.quantity ?? 1} className="rounded border p-2" />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">Payment Account *
-        <select name="paymentAccount" defaultValue={defaults?.paymentAccount ?? 'business'} className="rounded border p-2">
-          <option value="business">Business</option>
-          <option value="personal">Personal</option>
-        </select>
-      </label>
-      <label className="flex flex-col gap-1 text-sm">Cost RMB (optional)
-        <input name="costRmb" type="number" step="0.01" min="0" defaultValue={defaults?.costRmb ?? ''} className="rounded border p-2" />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">Cost MYR *
-        <input name="costMyr" type="number" step="0.01" min="0" required defaultValue={defaults?.costMyr ?? ''} className="rounded border p-2" />
-      </label>
-      <button className="rounded bg-black p-3 text-white">{submitLabel}</button>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="flex flex-col">
+          <span className="field-label">Quantity *</span>
+          <input name="quantity" type="number" min="1" required defaultValue={defaults?.quantity ?? 1} />
+        </label>
+        <label className="flex flex-col">
+          <span className="field-label">Payment account *</span>
+          <select name="paymentAccount" defaultValue={defaults?.paymentAccount ?? 'business'}>
+            <option value="business">Business</option>
+            <option value="personal">Personal</option>
+          </select>
+        </label>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="flex flex-col">
+          <span className="field-label">Cost RMB (optional)</span>
+          <input name="costRmb" type="number" step="0.01" min="0" defaultValue={defaults?.costRmb ?? ''} />
+        </label>
+        <label className="flex flex-col">
+          <span className="field-label">Cost MYR *</span>
+          <input name="costMyr" type="number" step="0.01" min="0" required defaultValue={defaults?.costMyr ?? ''} />
+        </label>
+      </div>
+
+      <button className="btn-primary justify-center">{submitLabel}</button>
     </form>
   );
 }
