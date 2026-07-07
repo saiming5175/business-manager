@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Schibsted_Grotesk } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const schibstedGrotesk = Schibsted_Grotesk({
-  variable: "--font-schibsted",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
@@ -24,9 +31,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${schibstedGrotesk.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased bg-background`}
     >
-      <body className="min-h-full flex flex-col bg-canvas text-ink antialiased">{children}</body>
+      <body className="min-h-full flex flex-col bg-background text-foreground antialiased">{children}</body>
     </html>
   );
 }

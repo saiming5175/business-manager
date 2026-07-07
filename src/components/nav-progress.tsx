@@ -52,7 +52,7 @@ export function NavProgress() {
         left: 0,
         height: '2.5px',
         width: `${width}%`,
-        background: 'var(--accent)',
+        background: 'var(--primary)',
         zIndex: 50,
         borderRadius: '0 3px 3px 0',
         transition: 'width 0.2s ease, opacity 0.25s ease',

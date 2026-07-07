@@ -3,63 +3,46 @@
 import Link from 'next/link';
 import { useLinkStatus } from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  LayoutDashboard,
+  Receipt,
+  TrendingUp,
+  Download,
+  LogOut,
+  ShoppingBag,
+  Menu,
+  X,
+} from 'lucide-react';
 
 type NavItem = {
   href: string;
   label: string;
-  icon: React.ReactNode;
+  icon: React.ElementType;
 };
 
-const items: NavItem[] = [
-  {
-    href: '/',
-    label: 'Insights',
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]">
-        <path d="M3 13h8V3H3zM13 21h8V3h-8zM3 21h8v-6H3z" />
-      </svg>
-    ),
-  },
-  {
-    href: '/expenses',
-    label: 'Expenses',
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]">
-        <path d="M4 4h16v14H4z" />
-        <path d="M4 9h16" />
-      </svg>
-    ),
-  },
-  {
-    href: '/income',
-    label: 'Income',
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]">
-        <path d="M12 1v22" />
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-      </svg>
-    ),
-  },
-  {
-    href: '/export',
-    label: 'Export',
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]">
-        <path d="M12 3v12" />
-        <path d="M8 11l4 4 4-4" />
-        <path d="M4 21h16" />
-      </svg>
-    ),
-  },
+const NAV: NavItem[] = [
+  { href: '/', label: 'Insights', icon: LayoutDashboard },
+  { href: '/expenses', label: 'Expenses', icon: Receipt },
+  { href: '/income', label: 'Income', icon: TrendingUp },
+  { href: '/export', label: 'Export', icon: Download },
 ];
 
-function Spinner({ className = '' }: { className?: string }) {
+function isActive(pathname: string, href: string) {
+  return href === '/' ? pathname === '/' : pathname.startsWith(href);
+}
+
+function cn(...classes: (string | undefined | false | null)[]) {
+  return classes.filter(Boolean).join(' ');
+}
+
+function Spinner({ className = '', size }: { className?: string; size: number }) {
   return (
     <svg
       className={`animate-spin ${className}`}
       viewBox="0 0 24 24"
       fill="none"
+      style={{ width: size, height: size }}
     >
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.25" strokeWidth="2.5" />
       <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="2.5" />
@@ -78,62 +61,158 @@ function PendingSignal() {
   return null;
 }
 
-function DesktopIcon({ icon }: { icon: React.ReactNode }) {
+function NavIcon({ icon: Icon, size }: { icon: React.ElementType; size: number }) {
   const { pending } = useLinkStatus();
   if (pending) {
-    return <Spinner className="h-[18px] w-[18px]" />;
+    return <Spinner size={size} />;
   }
-  return <>{icon}</>;
+  return <Icon size={size} />;
 }
 
-export function AppNav() {
+function SignOutButton({ className }: { className?: string }) {
+  return (
+    <form action="/auth/signout" method="post">
+      <button
+        type="submit"
+        className={cn(
+          'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.05] transition-all',
+          className
+        )}
+      >
+        <LogOut size={16} />
+        Sign out
+      </button>
+    </form>
+  );
+}
+
+function Logo({ size = 'md' }: { size?: 'sm' | 'md' }) {
+  const box = size === 'sm' ? 'w-6 h-6 rounded-md' : 'w-7 h-7 rounded-lg';
+  const icon = size === 'sm' ? 12 : 14;
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className={cn(box, 'bg-primary flex items-center justify-center')}>
+        <ShoppingBag size={icon} className="text-white" />
+      </div>
+      <span className="font-semibold text-foreground text-sm">Business Manager</span>
+    </div>
+  );
+}
+
+export function DesktopSidebar() {
   const pathname = usePathname();
 
   return (
-    <>
-      {/* Desktop sidebar nav */}
-      <nav className="hidden md:flex md:flex-col md:gap-[3px]">
-        {items.map((item) => {
-          const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+    <aside className="hidden lg:flex flex-col w-60 border-r border-border bg-sidebar shrink-0">
+      <div className="px-5 py-5 border-b border-border">
+        <Logo />
+      </div>
+
+      <nav className="flex-1 px-3 py-4 space-y-0.5">
+        {NAV.map(({ href, label, icon: Icon }) => {
+          const active = isActive(pathname, href);
           return (
             <Link
-              key={item.href}
-              href={item.href}
+              key={href}
+              href={href}
               prefetch
-              className={`flex items-center gap-[11px] rounded-[9px] px-[10px] py-[9px] text-sm font-medium no-underline transition-colors ${
-                active ? 'bg-accent-soft text-accent-ink' : 'text-muted hover:bg-canvas'
-              }`}
+              className={cn(
+                'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all',
+                active
+                  ? 'bg-primary/15 text-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
+              )}
             >
               <PendingSignal />
-              <span className={active ? 'text-accent' : 'text-faint'}>
-                <DesktopIcon icon={item.icon} />
-              </span>
-              {item.label}
+              <NavIcon icon={Icon} size={16} />
+              {label}
             </Link>
           );
         })}
       </nav>
 
-      {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-10 flex justify-around border-t border-hair bg-paper pb-[env(safe-area-inset-bottom)] md:hidden">
-        {items.map((item) => {
-          const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              prefetch
-              className={`flex flex-1 flex-col items-center gap-[3px] py-[9px] pb-3 text-[10px] font-semibold no-underline ${
-                active ? 'text-accent' : 'text-faint'
-              }`}
-            >
-              <PendingSignal />
-              <DesktopIcon icon={item.icon} />
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-    </>
+      <div className="px-3 py-4 border-t border-border">
+        <SignOutButton />
+      </div>
+    </aside>
+  );
+}
+
+export function MobileHeader() {
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  return (
+    <header className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-sidebar shrink-0 relative">
+      <Logo size="sm" />
+      <button
+        onClick={() => setMobileMenuOpen((v) => !v)}
+        className="text-muted-foreground hover:text-foreground transition-colors"
+        aria-label="Toggle menu"
+      >
+        {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
+      {/* Mobile Dropdown Menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden absolute top-[52px] left-0 right-0 z-40 bg-sidebar border-b border-border shadow-2xl">
+          <nav className="px-3 py-2 space-y-0.5">
+            {NAV.map(({ href, label, icon: Icon }) => {
+              const active = isActive(pathname, href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  prefetch
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all',
+                    active
+                      ? 'bg-primary/15 text-primary'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
+                  )}
+                >
+                  <PendingSignal />
+                  <Icon size={16} />
+                  {label}
+                </Link>
+              );
+            })}
+            <SignOutButton />
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+}
+
+export function MobileBottomNav() {
+  const pathname = usePathname();
+
+  return (
+    <nav className="lg:hidden flex border-t border-border bg-sidebar shrink-0">
+      {NAV.map(({ href, label, icon: Icon }) => {
+        const active = isActive(pathname, href);
+        return (
+          <Link
+            key={href}
+            href={href}
+            prefetch
+            className={cn(
+              'flex-1 flex flex-col items-center justify-center py-3 gap-1 text-xs font-medium transition-all',
+              active ? 'text-primary' : 'text-muted-foreground'
+            )}
+          >
+            <PendingSignal />
+            <NavIcon icon={Icon} size={18} />
+            <span>{label}</span>
+          </Link>
+        );
+      })}
+    </nav>
   );
 }

@@ -20,9 +20,9 @@ export default async function EditExpensePage({ params }: { params: Promise<{ id
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="space-y-5 max-w-lg">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-[-0.025em]">Edit expense</h1>
+        <h1 className="text-xl font-semibold text-foreground">Edit expense</h1>
         <ConfirmDelete action={remove} label="Delete expense" />
       </div>
       <ExpenseForm

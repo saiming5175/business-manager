@@ -1,226 +1,98 @@
 @import "tailwindcss";
 
 :root {
-  --canvas: #F7F7F8;
-  --paper: #FFFFFF;
-  --ink: #0F1115;
-  --muted: #6B7280;
-  --faint: #9CA3AF;
-  --hair: #ECECEE;
-  --hair-2: #E4E4E7;
-  --accent: #0E9F6E;
-  --accent-ink: #0A6B4A;
-  --accent-soft: #E7F6F0;
-  --up: #0E9F6E;
-  --down: #E5484D;
-  --down-soft: #FCEDED;
-  --amber-soft: #FBF1DD;
-  --amber-ink: #8A5A0B;
-  --net-border: #CDEBDD;
-  --radius: 12px;
+  --background: #0C0F1A;
+  --foreground: #E2E6F0;
+  --card: #131826;
+  --card-foreground: #E2E6F0;
+  --popover: #1A2035;
+  --popover-foreground: #E2E6F0;
+  --primary: #6366F1;
+  --primary-foreground: #ffffff;
+  --secondary: #1E2538;
+  --secondary-foreground: #A0ABBE;
+  --muted: #1A2035;
+  --muted-foreground: #6B7898;
+  --accent: #10B981;
+  --accent-foreground: #ffffff;
+  --destructive: #EF4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.07);
+  --input: #1A2035;
+  --ring: #6366F1;
+  --sidebar: #0E1220;
+  --sidebar-foreground: #E2E6F0;
+  --radius: 0.75rem;
+  --chart-1: #6366F1;
+  --chart-2: #10B981;
+  --chart-3: #F59E0B;
+  --chart-4: #EF4444;
+  --chart-5: #8B5CF6;
 }
 
 @theme inline {
-  --color-canvas: var(--canvas);
-  --color-paper: var(--paper);
-  --color-ink: var(--ink);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
-  --color-faint: var(--faint);
-  --color-hair: var(--hair);
-  --color-hair-2: var(--hair-2);
+  --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
-  --color-accent-ink: var(--accent-ink);
-  --color-accent-soft: var(--accent-soft);
-  --color-up: var(--up);
-  --color-down: var(--down);
-  --color-down-soft: var(--down-soft);
-  --color-amber-soft: var(--amber-soft);
-  --color-amber-ink: var(--amber-ink);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
-  --font-sans: var(--font-schibsted);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 
-  --default-border-color: var(--hair);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+
+  --default-border-color: var(--border);
 }
 
-body {
-  font-family: var(--font-sans), sans-serif;
-  letter-spacing: -0.01em;
-}
-
-@layer components {
-  .card {
-    background: var(--paper);
-    border: 1px solid var(--hair);
-    border-radius: 12px;
-    padding: 18px 20px;
+@layer base {
+  * {
+    @apply border-border;
   }
 
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    background: var(--ink);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 16px;
-    font-size: 13.5px;
-    font-weight: 600;
-    min-height: 44px;
-    cursor: pointer;
-    transition: background-color 0.15s ease, transform 0.1s ease;
-  }
-  .btn-primary:hover {
-    background: #22262e;
-  }
-  .btn-primary:active {
-    transform: scale(0.98);
+  html {
+    font-size: 15px;
   }
 
-  .btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    background: transparent;
-    color: var(--ink);
-    border: 1px solid var(--hair-2);
-    border-radius: 10px;
-    padding: 10px 16px;
-    font-size: 13.5px;
-    font-weight: 600;
-    min-height: 44px;
-    cursor: pointer;
-    transition: background-color 0.15s ease, transform 0.1s ease;
-  }
-  .btn-ghost:hover {
-    background: var(--canvas);
-  }
-  .btn-ghost:active {
-    transform: scale(0.98);
+  body {
+    @apply bg-background text-foreground;
   }
 
-  .field-label {
-    display: block;
-    font-size: 11px;
-    color: var(--muted);
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-bottom: 5px;
-  }
-
-  .field-input,
   input,
   select,
   textarea {
-    border: 1px solid var(--hair-2);
-    background: var(--paper);
-    border-radius: 9px;
-    padding: 10px 12px;
-    font-size: 14px;
-    min-height: 44px;
-    width: 100%;
-    font-family: inherit;
-    color: var(--ink);
+    @apply bg-secondary border border-border text-foreground rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-muted-foreground;
+    min-height: 40px;
   }
-  .field-input:focus,
-  input:focus,
-  select:focus,
-  textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-soft);
-  }
+}
 
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    font-size: 10.5px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 6px;
-  }
-  .badge-proof {
-    background: var(--amber-soft);
-    color: var(--amber-ink);
-  }
-  .badge-receipt {
-    background: var(--accent-soft);
-    color: var(--accent-ink);
-  }
-  .badge-none {
-    background: var(--canvas);
-    color: var(--faint);
-    border: 1px solid var(--hair-2);
-  }
-
-  .metric {
-    background: var(--paper);
-    border: 1px solid var(--hair);
-    border-radius: 12px;
-    padding: 16px 17px;
-  }
-  .metric-net {
-    border-color: var(--net-border);
-  }
-  .metric-net .metric-value {
-    color: var(--accent-ink);
-  }
-  .metric-value {
-    font-weight: 600;
-    font-size: 26px;
-    letter-spacing: -0.03em;
-  }
-
-  .seg {
-    display: inline-flex;
-    background: var(--paper);
-    border: 1px solid var(--hair-2);
-    border-radius: 10px;
-    padding: 3px;
-  }
-  .seg button {
-    border: none;
-    background: none;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--muted);
-    padding: 6px 13px;
-    border-radius: 7px;
-    cursor: pointer;
-    min-height: 0;
-  }
-  .seg button.on {
-    background: var(--ink);
-    color: #fff;
-  }
-
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13.5px;
-  }
-  .data-table th {
-    text-align: left;
-    color: var(--faint);
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    padding: 0 0 11px;
-  }
-  .data-table td {
-    padding: 12px 0;
-    border-top: 1px solid var(--hair);
-  }
-  .data-table td.r,
-  .data-table th.r {
-    text-align: right;
-  }
-
+@layer components {
   .skel {
-    background: linear-gradient(90deg, #eeeef0 25%, #f7f7f8 37%, #eeeef0 63%);
+    background: linear-gradient(90deg, #131826 25%, #1A2035 37%, #131826 63%);
     background-size: 400% 100%;
     animation: skel 1.3s ease infinite;
     border-radius: 7px;
