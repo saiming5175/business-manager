@@ -31,23 +31,30 @@ export async function listAttachments(userId: string, expenseId: string): Promis
   return views;
 }
 
-export async function addAttachment(params: {
-  userId: string; expenseId: string; file: File; tag: 'proof_of_payment' | 'receipt';
+// The file itself is uploaded directly from the browser to Supabase Storage
+// (see AttachmentUpload) to avoid Next.js/Vercel server-action body-size limits.
+// This records only the metadata row for a file already in storage.
+export async function recordAttachment(params: {
+  userId: string;
+  expenseId: string;
+  filePath: string;
+  fileType: 'image' | 'pdf';
+  originalFilename: string;
+  tag: 'proof_of_payment' | 'receipt';
 }): Promise<void> {
-  const { userId, expenseId, file, tag } = params;
+  const { userId, expenseId, filePath, fileType, originalFilename, tag } = params;
+
   const expense = await getExpense(userId, expenseId);
   if (!expense) throw new Error('Expense not found');
-  const fileType: 'image' | 'pdf' = file.type === 'application/pdf' ? 'pdf' : 'image';
-  const path = `${userId}/${expenseId}/${crypto.randomUUID()}-${file.name}`;
 
-  const supabase = await createClient();
-  const { error } = await supabase.storage.from('receipts').upload(path, file, {
-    contentType: file.type, upsert: false,
-  });
-  if (error) throw error;
+  // Security: only allow recording objects under this user's + expense's own folder,
+  // so a caller can't attach an arbitrary storage path they don't own.
+  if (!filePath.startsWith(`${userId}/${expenseId}/`)) {
+    throw new Error('Invalid file path');
+  }
 
   await db.insert(expenseAttachments).values({
-    userId, expenseId, filePath: path, fileType, originalFilename: file.name, tag,
+    userId, expenseId, filePath, fileType, originalFilename, tag,
   });
 }
 

@@ -1,7 +1,7 @@
-import { ChevronDown } from 'lucide-react';
 import { listAttachments } from '@/data/attachments';
-import { uploadAttachmentAction, deleteAttachmentAction } from '@/app/(app)/expenses/attachment-actions';
+import { deleteAttachmentAction } from '@/app/(app)/expenses/attachment-actions';
 import { ConfirmDelete } from '@/components/confirm-delete';
+import { AttachmentUpload } from '@/components/attachment-upload';
 
 const tagLabel = { proof_of_payment: 'Proof of Payment', receipt: 'Receipt' } as const;
 const tagBadgeClass = {
@@ -11,7 +11,6 @@ const tagBadgeClass = {
 
 export async function AttachmentsPanel({ userId, expenseId }: { userId: string; expenseId: string }) {
   const files = await listAttachments(userId, expenseId);
-  const upload = uploadAttachmentAction.bind(null, expenseId);
 
   return (
     <section className="bg-card border border-border rounded-xl p-5 flex flex-col gap-4 max-w-lg">
@@ -40,19 +39,7 @@ export async function AttachmentsPanel({ userId, expenseId }: { userId: string; 
         })}
         {files.length === 0 && <li className="py-2 text-sm text-muted-foreground">No files uploaded.</li>}
       </ul>
-      <form action={upload} className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center">
-        <input name="file" type="file" accept="image/*,application/pdf" required className="text-sm sm:flex-1" />
-        <div className="relative sm:w-48">
-          <select name="tag" className="w-full appearance-none pr-8 cursor-pointer">
-            <option value="receipt">Receipt</option>
-            <option value="proof_of_payment">Proof of Payment</option>
-          </select>
-          <ChevronDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-        </div>
-        <button className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center">
-          Upload
-        </button>
-      </form>
+      <AttachmentUpload userId={userId} expenseId={expenseId} />
     </section>
   );
 }
