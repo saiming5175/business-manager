@@ -3,14 +3,21 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { requireUserId } from '@/data/auth';
-import { addAttachment, deleteAttachment } from '@/data/attachments';
+import { recordAttachment, deleteAttachment } from '@/data/attachments';
 
-export async function uploadAttachmentAction(expenseId: string, formData: FormData) {
+const recordInput = z.object({
+  filePath: z.string().min(1),
+  fileType: z.enum(['image', 'pdf']),
+  originalFilename: z.string().min(1),
+  tag: z.enum(['proof_of_payment', 'receipt']),
+});
+
+// The browser uploads the file straight to Supabase Storage, then calls this to
+// record the metadata row. Only a tiny JSON payload crosses the server action.
+export async function recordAttachmentAction(expenseId: string, input: unknown) {
   const userId = await requireUserId();
-  const file = formData.get('file') as File;
-  const tag = z.enum(['proof_of_payment', 'receipt']).parse(formData.get('tag'));
-  if (!file || file.size === 0) return;
-  await addAttachment({ userId, expenseId, file, tag });
+  const data = recordInput.parse(input);
+  await recordAttachment({ userId, expenseId, ...data });
   revalidatePath(`/expenses/${expenseId}`);
   revalidatePath('/expenses');
 }
