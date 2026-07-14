@@ -88,6 +88,24 @@
     @apply bg-secondary border border-border text-foreground rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-muted-foreground;
     min-height: 40px;
   }
+
+  /* Instant tactile feedback: acknowledge a click the moment it's pressed,
+     before any server round-trip completes. */
+  button:not(:disabled),
+  a[href],
+  [role='button'],
+  summary,
+  label[for],
+  select {
+    cursor: pointer;
+  }
+
+  button:not(:disabled):active,
+  a[href]:active,
+  [role='button']:active {
+    opacity: 0.7;
+    transition: opacity 0.05s ease;
+  }
 }
 
 @layer components {

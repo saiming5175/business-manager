@@ -1,4 +1,5 @@
 import { ChevronDown, Plus } from 'lucide-react';
+import { SubmitButton } from '@/components/submit-button';
 
 const today = () => new Date().toLocaleDateString('en-CA');
 
@@ -46,9 +47,12 @@ export function WithdrawalForm({ action }: { action: (formData: FormData) => voi
           <span className="block text-xs font-medium text-muted-foreground mb-1.5">Note (optional)</span>
           <input name="note" placeholder="e.g. Transferred to Maybank" />
         </label>
-        <button className="w-full bg-primary text-primary-foreground text-sm font-medium py-2.5 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-          <Plus size={14} /> Save Withdrawal
-        </button>
+        <SubmitButton
+          icon={<Plus size={14} />}
+          className="w-full bg-primary text-primary-foreground text-sm font-medium py-2.5 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+        >
+          Save Withdrawal
+        </SubmitButton>
       </div>
     </form>
   );
