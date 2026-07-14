@@ -1,12 +1,13 @@
 'use client';
 
-import { Search } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Search, Loader2 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { useFilterNav } from './use-filter-nav';
 
 export function SearchBox() {
-  const router = useRouter();
   const params = useSearchParams();
   const q = params.get('q') ?? '';
+  const { navigate, pending } = useFilterNav();
 
   function update(value: string) {
     const sp = new URLSearchParams(params.toString());
@@ -15,12 +16,16 @@ export function SearchBox() {
     } else {
       sp.delete('q');
     }
-    router.push(`?${sp.toString()}`);
+    navigate(`?${sp.toString()}`);
   }
 
   return (
     <div className="relative flex-1 min-w-48">
-      <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+      {pending ? (
+        <Loader2 size={13} className="absolute left-3 top-1/2 -translate-y-1/2 animate-spin text-primary" />
+      ) : (
+        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+      )}
       <input
         type="text"
         defaultValue={q}

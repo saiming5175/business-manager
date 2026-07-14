@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { requireUserId } from '@/data/auth';
 import { listSales } from '@/data/sales';
 import { listWithdrawals } from '@/data/withdrawals';
@@ -8,11 +7,8 @@ import { SalesForm } from '@/components/sales-form';
 import { WithdrawalForm } from '@/components/withdrawal-form';
 import { PlatformBadge } from '@/components/ui-kit';
 import { ConfirmDelete } from '@/components/confirm-delete';
+import { IncomeTabs } from '@/components/income-tabs';
 import { formatMYR } from '@/lib/money';
-
-function cn(...classes: (string | undefined | false | null)[]) {
-  return classes.filter(Boolean).join(' ');
-}
 
 export default async function IncomePage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const { tab } = await searchParams;
@@ -26,26 +22,7 @@ export default async function IncomePage({ searchParams }: { searchParams: Promi
         <p className="text-sm text-muted-foreground mt-0.5">Record sales and platform withdrawals</p>
       </div>
 
-      <div className="flex bg-secondary rounded-lg p-1 gap-1 w-fit">
-        <Link
-          href="/income?tab=sales"
-          className={cn(
-            'px-4 py-1.5 text-sm font-medium rounded-md transition-all',
-            active === 'sales' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          Sales
-        </Link>
-        <Link
-          href="/income?tab=withdrawals"
-          className={cn(
-            'px-4 py-1.5 text-sm font-medium rounded-md transition-all',
-            active === 'withdrawals' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          Withdrawals
-        </Link>
-      </div>
+      <IncomeTabs active={active} />
 
       {active === 'sales' ? <SalesTab userId={userId} /> : <WithdrawalsTab userId={userId} />}
     </div>

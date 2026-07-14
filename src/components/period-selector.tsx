@@ -1,7 +1,9 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { ChevronDown, Loader2 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { useFilterNav } from './use-filter-nav';
 
 function cn(...classes: (string | undefined | false | null)[]) {
   return classes.filter(Boolean).join(' ');
@@ -39,17 +41,19 @@ export function PeriodSelector({
 }: {
   defaultKind?: 'month' | 'year' | 'all';
 } = {}) {
-  const router = useRouter();
   const params = useSearchParams();
+  const { navigate, pending } = useFilterNav();
+  const [clickedKind, setClickedKind] = useState<string | null>(null);
   const kind = params.get('kind') ?? defaultKind;
   const now = new Date();
   const year = Number(params.get('year') ?? now.getFullYear());
   const month = Number(params.get('month') ?? now.getMonth() + 1);
 
   function update(next: Record<string, string>) {
+    if (next.kind) setClickedKind(next.kind);
     const sp = new URLSearchParams(params.toString());
     Object.entries(next).forEach(([k, v]) => sp.set(k, v));
-    router.push(`?${sp.toString()}`);
+    navigate(`?${sp.toString()}`);
   }
 
   const kinds = [
@@ -66,19 +70,23 @@ export function PeriodSelector({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <div className="flex bg-secondary rounded-lg p-1 gap-1 w-fit">
-        {kinds.map((k) => (
-          <button
-            key={k.value}
-            type="button"
-            onClick={() => update({ kind: k.value })}
-            className={cn(
-              'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
-              kind === k.value ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            {k.label}
-          </button>
-        ))}
+        {kinds.map((k) => {
+          const isPending = pending && clickedKind === k.value;
+          return (
+            <button
+              key={k.value}
+              type="button"
+              onClick={() => update({ kind: k.value })}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all active:opacity-80',
+                kind === k.value ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              {isPending && <Loader2 size={12} className="animate-spin" />}
+              {k.label}
+            </button>
+          );
+        })}
       </div>
       {kind !== 'all' && (
         <input

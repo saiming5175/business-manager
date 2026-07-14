@@ -1,5 +1,6 @@
 import { ChevronDown } from 'lucide-react';
 import type { ExpenseListItem } from '@/data/expenses';
+import { SubmitButton } from '@/components/submit-button';
 
 const today = () => new Date().toLocaleDateString('en-CA');
 
@@ -62,9 +63,9 @@ export function ExpenseForm({
         </label>
       </div>
 
-      <button className="w-full bg-primary text-primary-foreground text-sm font-medium py-2.5 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+      <SubmitButton className="w-full bg-primary text-primary-foreground text-sm font-medium py-2.5 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
         {submitLabel}
-      </button>
+      </SubmitButton>
     </form>
   );
 }
