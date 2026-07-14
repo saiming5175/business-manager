@@ -34,10 +34,14 @@ function Select({
   );
 }
 
-export function PeriodSelector() {
+export function PeriodSelector({
+  defaultKind = 'month',
+}: {
+  defaultKind?: 'month' | 'year' | 'all';
+} = {}) {
   const router = useRouter();
   const params = useSearchParams();
-  const kind = params.get('kind') ?? 'month';
+  const kind = params.get('kind') ?? defaultKind;
   const now = new Date();
   const year = Number(params.get('year') ?? now.getFullYear());
   const month = Number(params.get('month') ?? now.getMonth() + 1);
