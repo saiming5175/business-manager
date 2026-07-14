@@ -2,10 +2,12 @@ import Link from 'next/link';
 import { AlertCircle, Plus } from 'lucide-react';
 import { requireUserId } from '@/data/auth';
 import { listExpenses } from '@/data/expenses';
-import { formatMYR } from '@/lib/money';
+import { formatMYR, sumMoney } from '@/lib/money';
 import { periodFromParams, dateInPeriod } from '@/lib/period';
 import { PeriodSelector } from '@/components/period-selector';
 import { SearchBox } from '@/components/search-box';
+import { AccountFilter } from '@/components/account-filter';
+import type { PaymentAccount } from '@/lib/types';
 
 const tagLabel = { proof_of_payment: 'Proof', receipt: 'Receipt' } as const;
 const tagBadgeClass = {
@@ -16,25 +18,29 @@ const tagBadgeClass = {
 export default async function ExpensesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ kind?: string; year?: string; month?: string; q?: string }>;
+  searchParams: Promise<{ kind?: string; year?: string; month?: string; q?: string; account?: string }>;
 }) {
   const userId = await requireUserId();
   const params = await searchParams;
-  const period = params.kind ? periodFromParams(params) : { kind: 'all' as const };
+  // Expenses default to "All time" (unlike the dashboard, which defaults to the
+  // current month) so newly added records are always visible without a filter.
+  const period = periodFromParams(params, 'all');
   const q = params.q?.trim().toLowerCase() ?? '';
+  const account = params.account as PaymentAccount | undefined;
   const items = (await listExpenses(userId)).filter((e) => {
     if (!dateInPeriod(e.orderDate, period)) return false;
+    if (account && e.paymentAccount !== account) return false;
     if (!q) return true;
     return e.itemName.toLowerCase().includes(q) || e.orderId.toLowerCase().includes(q);
   });
-  const total = items.reduce((sum, e) => sum + e.costMyr, 0);
+  const total = sumMoney(items.map((e) => e.costMyr));
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold text-foreground">Expenses</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{items.length} records · {formatMYR(total)} total</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{items.length} records</p>
         </div>
         <Link
           href="/expenses/new"
@@ -45,8 +51,9 @@ export default async function ExpensesPage({
         </Link>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <PeriodSelector />
+      <div className="flex flex-wrap items-center gap-2">
+        <PeriodSelector defaultKind="all" />
+        <AccountFilter />
         <SearchBox />
       </div>
 
@@ -92,6 +99,14 @@ export default async function ExpensesPage({
               </li>
             ))}
           </ul>
+        )}
+        {items.length > 0 && (
+          <div className="flex items-center justify-between border-t border-border bg-white/[0.02] px-5 py-3.5">
+            <span className="text-sm font-medium text-muted-foreground">
+              Total · {items.length} {items.length === 1 ? 'record' : 'records'}
+            </span>
+            <span className="font-mono text-sm font-semibold text-foreground">{formatMYR(total)}</span>
+          </div>
         )}
       </div>
     </div>
